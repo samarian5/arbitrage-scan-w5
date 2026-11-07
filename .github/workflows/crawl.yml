@@ -1,0 +1,22 @@
+name: crawl
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "23 */2 * * *"
+
+# One running + one pending run per shard. cancel-in-progress must stay false:
+# a cancelled slice mid-write is a hole in the pass.
+concurrency:
+  group: crawl-w5
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  crawl:
+    uses: samarian5/arbitrage-scan/.github/workflows/crawl-slice.yml@main
+    with:
+      slot: w5
+      slices: 10
+    secrets: inherit
